@@ -108,3 +108,29 @@ All errors are handled centrally and return JSON responses in the format:
 ## Database Schema
 
 See `prisma/schema.prisma` for the complete database schema.
+
+
+# Browser Extension Assignment
+
+## Description
+This is a browser extension developed as part of an assignment.
+
+## Features
+- Popup UI
+- Background script
+- Content script interaction
+
+## How to Install
+1. Clone or download this repository
+2. Open Chrome and go to chrome://extensions
+3. Enable Developer Mode
+4. Click "Load unpacked"
+5. Select the browser-extension folder
+
+## Tech Used
+- JavaScript
+- HTML
+- CSS
+- Chrome Extensions API
+
+
