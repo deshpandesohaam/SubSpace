@@ -1,101 +1,110 @@
-# Clueso.io Clone
+# Clueso Backend API
 
-A comprehensive full-stack clone of Clueso.io - an AI-powered platform that transforms screen recordings into professional product videos and documentation.
+RESTful API backend for the Clueso.io clone built with Express.js, TypeScript, and Prisma.
 
-## Features
+## Setup
 
-- **User Onboarding & Authentication** - Seamless sign-up flows and session management
-- **Dashboard Experience** - Intuitive interface with navigation and layout patterns
-- **Feedback Collection Flows** - Capture, organize, and display user feedback
-- **AI-Powered Insights** - Generate summaries and insights from content
-- **Data Management** - Robust storage and retrieval systems
-- **System Communication** - Seamless integration between extension, backend, and frontend
-
-## Tech Stack
-
-- **Frontend**: Next.js 14 (App Router), React, TypeScript, Tailwind CSS
-- **Backend**: Node.js, Express, TypeScript, Prisma ORM
-- **Database**: PostgreSQL
-- **Extension**: Chrome Extension (Manifest V3)
-- **Authentication**: JWT tokens, bcrypt
-- **AI**: OpenAI API (with mock fallback)
-
-## Project Structure
-
-```
-clueso-clone/
-├── frontend/          # Next.js frontend application
-├── backend/           # Express.js backend API
-├── extension/         # Chrome extension for screen recording
-├── shared/            # Shared types and utilities
-└── README.md
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- PostgreSQL 14+
-- npm or yarn
-
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
+1. Install dependencies:
 
    ```bash
-   npm run install:all
+   npm install
    ```
 
-3. Set up environment variables:
-
-   - Copy `backend/.env.example` to `backend/.env` and configure
-   - Copy `frontend/.env.example` to `frontend/.env.local` and configure
-
-4. Set up the database:
+2. Set up environment variables:
 
    ```bash
-   cd backend
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+3. Set up the database:
+
+   ```bash
    npx prisma migrate dev
+   npx prisma generate
    ```
 
-5. Run the development servers:
+4. (Optional) Seed the database:
+
+   ```bash
+   npm run db:seed
+   ```
+
+5. Start the development server:
    ```bash
    npm run dev
    ```
 
-### Environment Variables
+## API Endpoints
 
-#### Backend (.env)
+### Authentication
+
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/verify` - Verify authentication token
+
+### Users
+
+- `GET /api/users/me` - Get current user
+- `PUT /api/users/me` - Update current user
+
+### Projects
+
+- `GET /api/projects` - Get all projects
+- `GET /api/projects/:id` - Get project by ID
+- `POST /api/projects` - Create new project
+- `PUT /api/projects/:id` - Update project
+- `DELETE /api/projects/:id` - Delete project
+
+### Recordings
+
+- `GET /api/recordings` - Get all recordings (optional query: projectId)
+- `GET /api/recordings/:id` - Get recording by ID
+- `POST /api/recordings` - Create new recording
+- `PUT /api/recordings/:id` - Update recording
+- `DELETE /api/recordings/:id` - Delete recording
+
+### Feedback
+
+- `GET /api/feedback` - Get all feedback (optional queries: projectId, recordingId, type)
+- `GET /api/feedback/:id` - Get feedback by ID
+- `POST /api/feedback` - Create new feedback
+- `PUT /api/feedback/:id` - Update feedback
+- `DELETE /api/feedback/:id` - Delete feedback
+
+### Insights
+
+- `GET /api/insights` - Get all insights (optional queries: projectId, recordingId, type)
+- `GET /api/insights/:id` - Get insight by ID
+- `POST /api/insights/generate` - Generate AI insight
+- `DELETE /api/insights/:id` - Delete insight
+
+## Authentication
+
+Most endpoints require authentication. Include the JWT token in the Authorization header:
 
 ```
-DATABASE_URL="postgresql://user:password@localhost:5432/clueso"
-JWT_SECRET="your-secret-key"
-JWT_EXPIRES_IN="7d"
-OPENAI_API_KEY="your-openai-api-key" (optional, uses mock if not provided)
-PORT=3001
-CORS_ORIGIN="http://localhost:3000"
+Authorization: Bearer <token>
 ```
 
-#### Frontend (.env.local)
+## AI Service
 
+The AI service supports both OpenAI API and mock implementations:
+
+- If `OPENAI_API_KEY` is set, uses OpenAI GPT-4
+- Otherwise, uses mock responses with clear documentation
+
+## Error Handling
+
+All errors are handled centrally and return JSON responses in the format:
+
+```json
+{
+  "error": "Error type",
+  "message": "Error message"
+}
 ```
-NEXT_PUBLIC_API_URL="http://localhost:3001"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-```
 
-## API Documentation
+## Database Schema
 
-See `backend/README.md` for detailed API documentation.
-
-## Extension Setup
-
-1. Open Chrome and navigate to `chrome://extensions/`
-2. Enable "Developer mode"
-3. Click "Load unpacked"
-4. Select the `extension` directory
-
-## License
-
-MIT
+See `prisma/schema.prisma` for the complete database schema.

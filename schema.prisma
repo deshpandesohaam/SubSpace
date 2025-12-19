@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects    Project[]
+  feedback    Feedback[]
+  recordings  Recording[]
+  insights    Insight[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  recordings  Recording[]
+  feedback    Feedback[]
+  insights    Insight[]
+}
+
+model Recording {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  fileUrl     String?
+  thumbnailUrl String?
+  status      RecordingStatus @default(PENDING)
+  duration    Int?     // in seconds
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  metadata    Json?    // Additional metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  feedback    Feedback[]
+  insights    Insight[]
+}
+
+enum RecordingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model Feedback {
+  id          String   @id @default(cuid())
+  content     String
+  type        FeedbackType
+  rating      Int?     // 1-5
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  recordingId String?
+  recording   Recording? @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum FeedbackType {
+  GENERAL
+  BUG_REPORT
+  FEATURE_REQUEST
+  IMPROVEMENT
+}
+
+model Insight {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  type        InsightType
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  recordingId String?
+  recording   Recording? @relation(fields: [recordingId], references: [id], onDelete: Cascade)
+  metadata    Json?    // AI-generated metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum InsightType {
+  SUMMARY
+  TRANSCRIPT
+  KEY_POINTS
+  ACTION_ITEMS
+  SENTIMENT
+}
+
